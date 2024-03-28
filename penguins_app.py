@@ -17,7 +17,7 @@ st.sidebar.markdown("""
 [Example CSV input file](https://raw.githubusercontent.com/dataprofessor/data/master/penguins_example.csv)
 """)
 
-#Dosya yükleme işlemi için:
+# uploading data
 uploaded_file= st.sidebar.file_uploader("Upload your csv file", type=["csv"])
 if uploaded_file is not None:
     input_df= pd.read_csv(uploaded_file)
