@@ -22,7 +22,7 @@ uploaded_file= st.sidebar.file_uploader("Upload your csv file", type=["csv"])
 if uploaded_file is not None:
     input_df= pd.read_csv(uploaded_file)
 else:
-    def user_input_features(): #yüklenen dosya yoksa manuel seçim için
+    def user_input_features(): #manuel selecting if no uploaded file
         island= st.sidebar.selectbox("Island", ("Biscoe", "Dream", "Torgersen"))
         sex= st.sidebar.selectbox("Sex", ("male", "female"))
         bill_length_mm= st.sidebar.slider("Bill lenght (mm)", 32.1, 59.6, 43.9)
@@ -39,33 +39,33 @@ else:
         return features
     input_df= user_input_features()
 
-#girilen değerlerle (input_df) orijinal dataframe'i birleştireceğiz:
+# merging the original dataframe with the input(input_df)
 pen_raw= pd.read_csv("/Users/ahmetemintek/Desktop/penguins-project/penguins_cleaned.csv")
 penguins= pen_raw.drop(columns=["species"])
-df= pd.concat([input_df, penguins], axis=0) #ilk sırada kullanıcının girdiği değerler olacak
+df= pd.concat([input_df, penguins], axis=0) #user inputs will be on the first
 
-#df'i encode yapacağız
+# encoding df
 encode= ["sex", "island"]
 for col in encode:
     df= pd.concat([df, pd.get_dummies(df[col], prefix=col)], axis=1)
     del df[col]
-df= df[:1] #sadece ilk satırı seçiyoruz tahmin için. Çünkü ilk satır kullanıcı girdi verileri
+df= df[:1] #we choose only the first row for the prediction
 
-#kullanıcı girdilerinin gösterilmesi:
+# showing the user inputs
 if uploaded_file is not None:
     st.write(df)
 else:
     st.write("Awaiting CSV file to be uploaded. Currently using example input parameters (shown below).")
     st.write(df)
 
-#kaydettiğimiz pkl dosyasındaki modeli okuyacağız:
+# reading the model from the saved .pkl file
 load_model= pickle.load(open("class_model.pkl", "rb"))
 
-#model ile tahmin
+# prediction
 pred= load_model.predict(df)
 pred_proba= load_model.predict_proba(df)
 
-#sonuçları gösteriyoruz:
+# displaying the results
 st.subheader("Target Values")
 penguins_species= np.array(["Adelie", "Chinstrap", "Gentoo"])
 st.write(penguins_species)
